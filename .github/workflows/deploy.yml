@@ -1,0 +1,59 @@
+name: Backend
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "**"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Copy backend files to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "."
+          target: "/home/ubuntu/aerothermic-backend"
+          rm: true
+
+      - name: Install, Migrate & Restart on EC2
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            # 1. Load NVM
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+            cd /home/ubuntu/aerothermic-backend
+
+            # 2. CREATE THE .ENV FILE
+            echo "${{ secrets.ENV_FILE }}" > .env
+
+            # 3. Install dependencies
+            npm ci --production
+
+            # 3. Run Migrations
+            npx prisma generate
+            npx prisma migrate deploy
+
+            # 4. Smart Restart Logic
+            if pm2 describe aero-backend > /dev/null; then
+              echo "App exists, restarting..."
+              pm2 restart aero-backend --update-env
+            else
+              echo "App not found, starting new instance..."
+              pm2 start server.js --name "aero-backend" --node-args="--env-file=.env"
+            fi
+
+            pm2 save
