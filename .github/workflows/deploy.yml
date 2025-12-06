@@ -35,8 +35,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           source: "."
-          target: "/home/${{ secrets.SSH_USER }}/backend"
-
+          target: "/home/yogi/Desktop/workspace/backend/backend"
       # 5. Restart PM2
       - name: Restart PM2 on Server
         uses: appleboy/ssh-action@v1.2.0
