@@ -1,13 +1,13 @@
-const { faker } = require('@faker-js/faker');
 const { User } = require('../../../src/models');
+const mockFaker = require('../../utils/mockFaker');
 
 describe('User model', () => {
   describe('User validation', () => {
     let newUser;
     beforeEach(() => {
       newUser = {
-        name: faker.name.findName(),
-        email: faker.internet.email().toLowerCase(),
+        name: mockFaker.internet.userName(),
+        email: mockFaker.internet.email().toLowerCase(),
         password: 'password1',
         role: 'user',
       };
@@ -46,8 +46,8 @@ describe('User model', () => {
   describe('User toJSON()', () => {
     test('should not return user password when toJSON is called', () => {
       const newUser = {
-        name: faker.name.findName(),
-        email: faker.internet.email().toLowerCase(),
+        name: mockFaker.internet.userName(),
+        email: mockFaker.internet.email().toLowerCase(),
         password: 'password1',
         role: 'user',
       };

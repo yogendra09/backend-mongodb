@@ -39,6 +39,9 @@ const logout = async (refreshToken) => {
  */
 const refreshAuth = async (refreshToken) => {
   try {
+    if (!refreshToken) {
+      throw new ApiError(status.BAD_REQUEST, 'Refresh token missing');
+    }
     const refreshTokenDoc = await tokenService.verifyToken(refreshToken, tokenTypes.REFRESH);
     const user = await userService.getUserById(refreshTokenDoc.user);
     if (!user) {

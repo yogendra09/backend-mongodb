@@ -34,6 +34,7 @@ const userSchema = mongoose.Schema(
         }
       },
       private: true, // used by the toJSON plugin
+      select: false,
     },
     role: {
       type: String,
@@ -52,6 +53,7 @@ const userSchema = mongoose.Schema(
 
 // add plugin that converts mongoose to json
 userSchema.plugin(paginate);
+userSchema.plugin(require('./plugins/toJSON.plugin'));
 
 /**
  * Check if email is taken

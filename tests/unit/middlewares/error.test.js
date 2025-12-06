@@ -3,8 +3,8 @@ const { status } = require('http-status');
 const httpMocks = require('node-mocks-http');
 const { errorConverter, errorHandler } = require('../../../src/middlewares/error');
 const ApiError = require('../../../src/utils/ApiError');
-const config = require('../../../src/config/config');
-const logger = require('../../../src/config/logger');
+const config = require('../../../src/config/env.config');
+const logger = require('../../../src/config/logger.config');
 
 describe('Error middlewares', () => {
   describe('Error converter', () => {
